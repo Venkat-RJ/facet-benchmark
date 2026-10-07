@@ -8,10 +8,12 @@
 
 # FACET
 
+> **Exploratory pilot.** FACET is a personal experiment on attribution faithfulness in multi-factor LLM reasoning. It is not a validated benchmark; findings are limited to the tested models, probes and cases.
+
 **Measuring Attribution Faithfulness in Multi-Factor LLM Reasoning**
 
 [![DOI](https://zenodo.org/badge/1208742147.svg)](https://doi.org/10.5281/zenodo.19557436)
-[![Verify paper numbers](https://github.com/Venkateshwar-PortoAI/facet-benchmark/actions/workflows/verify-paper.yml/badge.svg)](https://github.com/Venkateshwar-PortoAI/facet-benchmark/actions/workflows/verify-paper.yml)
+[![Verify paper numbers](https://github.com/Venkat-RJ/facet-benchmark/actions/workflows/verify-paper.yml/badge.svg)](https://github.com/Venkat-RJ/facet-benchmark/actions/workflows/verify-paper.yml)
 
 Venkateshwar Reddy Jambula, Pranaalpha Labs  ·  [Paper (PDF)](FACET_paper.pdf)  ·  [Zenodo archive](https://doi.org/10.5281/zenodo.19557436)
 
@@ -51,7 +53,7 @@ This matters because forced-choice attribution probes (top-1, top-k) are the dom
 Install:
 
 ```bash
-git clone https://github.com/Venkateshwar-PortoAI/facet-benchmark && cd facet-benchmark
+git clone https://github.com/Venkat-RJ/facet-benchmark && cd facet-benchmark
 pip install -r eval/requirements.txt
 ```
 

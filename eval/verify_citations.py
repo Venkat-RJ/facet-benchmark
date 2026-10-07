@@ -71,7 +71,7 @@ def first_surname_from_authors(authors: str) -> str:
 
 USER_AGENT = (
     "FACET-benchmark/1.0 "
-    "(https://github.com/Venkateshwar-PortoAI/facet-benchmark; "
+    "(https://github.com/Venkat-RJ/facet-benchmark; "
     "mailto:venkateshwar.jambula@pranaalpha.com)"
 )
 
