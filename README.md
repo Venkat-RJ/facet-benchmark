@@ -21,7 +21,7 @@ Venkateshwar Reddy Jambula, Pranaalpha Labs  ·  [Paper (PDF)](FACET_paper.pdf) 
 
 ## What this is
 
-FACET is a benchmark you can run against any LLM to measure whether it actually integrates multiple factors when it reasons, or quietly collapses onto whichever one factor is most canonical in its training data.
+FACET is an exploratory pilot of how LLMs **report** factor importance in multi-factor decisions. The four probes compare observable self-reports, not hidden internal reasoning.
 
 The problem we're testing: when an LLM is asked to weigh 5 to 10 different considerations and reach a decision — medical differential diagnosis, regulatory compliance review, legal balancing tests — does it actually weigh them all, or does it project the distributed reasoning down onto a single factor and answer as if only one mattered? This is the difference between weighted-additive integration (WADD) and lexicographic shortcutting (LEX) from the multi-attribute decision-making literature (Payne, Bettman and Johnson, 1993).
 
@@ -29,7 +29,7 @@ We instantiate the test on US tort balancing cases — real appellate decisions 
 
 ## Why it matters for people building with LLMs
 
-Most current LLM explainability tooling uses forced-choice top-1 or top-k attribution probes ("which factor drove this decision?"). The headline result of this pilot is that the probe format itself determines what the model looks like. Under a top-1 probe, zero of eight frontier models look faithful on our counterfactual Barker case. Under a weighted-rank probe on the same models and the same case, all eight do. **The reasoning was distributed the whole time. The single-factor probe was compressing it.** Audit pipelines built on top-1 probes may be under-reporting distributed reasoning and over-reporting lexicographic failure.
+This pilot contrasts a top-1 question with a cued full-vector weight question on eight model configurations. On the counterfactual Barker case, 0/8 meet the P1 criterion and 8/8 meet the **different** P2 criterion. These non-equivalent elicitation and scoring setups provide evidence of measurement sensitivity, **not** of hidden distributed reasoning or causal faithfulness.
 
 ---
 
@@ -42,9 +42,9 @@ On the same 8 frontier models and the same 3 counterfactual legal cases, two pro
 - **Single-factor probe** ("which one factor is most important?"): **0 of 8 models** are faithful on CF-Barker.
 - **Weighted-rank probe** ("assign percentage weights to all N factors"): **8 of 8 models** are faithful on the same case.
 
-The reasoning was WADD-consistent the whole time. The single-factor probe was compressing it to look lexicographic. **The probe format, not the model, drives the apparent failure.**
+The two probes produce different classifications under different scoring rules. Neither probe independently verifies the model's hidden reasoning or the causal factors underlying its decision.
 
-This matters because forced-choice attribution probes (top-1, top-k) are the dominant format in current LLM explainability tooling. If FACET generalizes, those probes are systematically under-reporting distributed reasoning.
+This is a measurement-design warning: a single self-report probe is insufficient evidence of causal factor importance. Independent cases, common scoring endpoints, and negative controls are necessary.
 
 ---
 
@@ -119,7 +119,7 @@ Drop it in `instances/`, then run any probe against it:
 python3 eval/run_weighted_probe.py --instance your-domain-0001 --backend claude --model opus
 ```
 
-The four probes don't care whether the doctrine is tort law or radiology — they only need the factor list and the ground-truth answer. **Caveat:** the paper's analysis scripts (`analyze_*.py`) currently assume the legal corpus and would need light adaptation for cross-domain rollups. The four probe runners themselves are domain-clean.
+The harness can accept other factor-list tasks, but the method has not been validated in other domains; new domains require independent labels and adapted analysis. **Caveat:** the paper's analysis scripts (`analyze_*.py`) currently assume the legal corpus and would need light adaptation for cross-domain rollups. The four probe runners themselves are domain-clean.
 
 ---
 
@@ -172,11 +172,12 @@ Every numeric claim in the paper is mechanically verifiable from the raw data in
 ```bash
 python3 eval/analyze_pilot.py            # regenerates Tables 2 & 3
 python3 eval/analyze_weighted_probe.py
-python3 eval/verify_paper_numbers.py     # re-derives every paper number from results/*.json — currently 80/80 PASS
+python3 eval/verify_paper_numbers.py     # legacy arithmetic checks only
+python3 eval/recompute_valid_only.py --known-invalid eval/known_invalid_records.json --output /tmp/facet-valid-only.json
 python3 eval/verify_citations.py         # re-checks every arXiv citation against the live arXiv API — currently 5/5 PASS
 ```
 
-Both verifiers run in CI on every push (see badge above). If the raw JSON in `results/` ever drifts from the paper's claims, CI fails.
+CI now runs trial-validity unit tests and valid-only recomputation with explicit historical exclusions, alongside the legacy arithmetic and citation checks. The historical 80/80 figure is **not** evidence that all input records were valid.
 
 ---
 
@@ -188,15 +189,21 @@ Both verifiers run in CI on every push (see badge above). If the raw JSON in `re
 | Labs represented | 6 |
 | In-distribution legal cases | 10 |
 | Counterfactual variants | 3 (+ 4 adversarial rewrites) |
-| Total C2 ablation trials | 144 |
+| Total C2 ablation trials | 144 collected; 141 valid weight vectors |
 | Raw JSON output files | 350+ |
-| Numeric claims mechanically verified | 80/80 |
+| Legacy arithmetic checks | 80/80; not a full validity audit |
 | P1 vs P2 McNemar's exact *p* | 2.4×10⁻⁴ |
 | GPT-5.4 CF-Cabral family n | 22 |
 | GPT-5.4 wrong-outcome rate | 7/22, 95% Wilson CI [16%, 53%] |
 | Full 8-model × 3-counterfactual sweep cost | ~$35 |
 
 ---
+
+## Validity audit and corrections
+
+An audit of 306 archived weighted-probe files identified **12 invalid factor vectors**: nine counterfactual and three C2. They are preserved but excluded from valid-only analysis. DeepSeek's C2 mean residual becomes **6.33% over 15 valid ablations**, rather than 5.28% over 18 attempts. Some manuscript plots and model-group comparisons still require regeneration and independent replication. See [the correction notes](docs/facet_acl2027_audit.md) and [the frozen exclusions](eval/known_invalid_records.json).
+
+No new model calls or independent legal-label validation are claimed for these corrections.
 
 ## Status
 
