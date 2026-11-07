@@ -202,7 +202,7 @@ Table~\ref{tab:p3} reports the $P_3$ matrix in tabular form with replication cou
 
 \begin{table}[t]
 \centering
-\caption{$P_3$ (adversarial weighted-rank probe) replication summary. ``$\bar{w}$'' = mean weight on neutralized factor. ``Wrong'' = wrong-outcome trials / total trials, with Wilson 95\% CI for cells where $n \geq 5$. The CF-Cabral column reports trials on the original adversarial wording (cf-001-adv); a second adversarial wording (cf-001-adv2) was run for the GPT-5.4 cf-001 cell only, adding $6$ trials and producing $4/6$ wrong outcomes. The combined GPT-5.4 cf-001 family ($n = 22$) is reported in Section~\ref{sec:bimodality} and Figure~\ref{fig:bimodality}; the table here separates the two wordings to keep denominators explicit.}
+\caption{$P_3$ (adversarial weighted-rank probe) replication summary. ``$\bar{w}$'' = mean weight on neutralized factor. ``Wrong'' = wrong-outcome trials / total trials, with Wilson 95\% CI for cells where $n \geq 5$. Invalid weighted vectors are excluded: in CF-Biakanja, DeepSeek has no valid P3 vectors (0/2). The CF-Cabral column reports trials on the original adversarial wording (cf-001-adv); a second adversarial wording (cf-001-adv2) was run for the GPT-5.4 cf-001 cell only, adding $6$ trials and producing $4/6$ wrong outcomes. The combined GPT-5.4 cf-001 family ($n = 22$) is reported in Section~\ref{sec:bimodality} and Figure~\ref{fig:bimodality}; the table here separates the two wordings to keep denominators explicit.}
 \label{tab:p3}
 \small
 \setlength{\tabcolsep}{4pt}
@@ -215,7 +215,7 @@ Table~\ref{tab:p3} reports the $P_3$ matrix in tabular form with replication cou
 Sonnet 4.6      & 6  & 11.7 & 0/6 & 6 & 4.2  & 0/6 & 6 & 6.7  & 0/6 \\
 Opus 4.6        & 6  & 10.0 & 0/6 & 6 & 11.7 & 0/6 & 6 & 10.0 & 0/6 \\
 GPT-5.4         & 16 & \textbf{18.1} & \textbf{3/16 [6\%, 43\%]} & 6 & \textbf{31.2} & 0/6 & 6 & 1.7 & 0/6 \\
-DeepSeek v3.2   & 2  & 15.0 & 0/2 & 4 & 0.0 & 0/4 & 2 & 0.0 & 0/2 \\
+DeepSeek v3.2   & 2  & 15.0 & 0/2 & 4 & 0.0 & 0/4 & 0 & -- & -- \\
 Mistral L3      & 2  & 10.0 & 0/2 & 1 & 0.0 & 0/1 & 2 & 10.0 & 0/2 \\
 Maverick        & 2  & 10.0 & 0/2 & 1 & 0.0 & 0/1 & 2 & 10.0 & 0/2 \\
 Scout           & 2  & 10.0 & 0/2 & 1 & 0.0 & 0/1 & 2 & 10.0 & 0/2 \\
@@ -230,7 +230,7 @@ Three observations from Table~\ref{tab:p3} and Figure~\ref{fig:adv}:
 
 \textbf{The CF-Cabral picture is dominated by GPT-5.4 mode-switching.} On CF-Cabral $P_3$, the other seven models cluster narrowly ($w_{F1}$ in $\{10, 11.7, 12, 15\}$ range across all replications). GPT-5.4 alone exhibits high variance ($n=16$, range $[5, 60]$, $\sigma=17.0$). The mean of $18.1\%$ obscures the underlying bimodality, which is reported in Section~\ref{sec:bimodality}.
 
-\textbf{The CF-Biakanja picture is narrow with no clean lab-based pattern.} Spread is $0$--$15\%$ across all eight models. GPT-5.4 is fully faithful here ($\bar{w}=1.7\%$). Qwen3 Next is the partial outlier at $13.0\%$ mean ($n=5$).
+\textbf{The CF-Biakanja picture is narrow among valid trials, with no clean lab-based pattern.} Among seven configurations with valid weight vectors, the reported spread is $0$--$15\%$. Both DeepSeek trials are excluded (invalid totals of 120 and 0); GPT-5.4 has a low neutral-factor weight here ($\bar{w}=1.7\%$). Qwen3 Next is the partial outlier at $13.0\%$ mean ($n=5$).
 
 \subsection{The Bimodality Finding on CF-Cabral Adversarial}
 \label{sec:bimodality}
@@ -265,7 +265,7 @@ Figure~\ref{fig:c2} reports the C2 result for each (model, anchor) pair. For eac
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.85\linewidth]{fig4_c2_faithfulness.png}
-\caption{C2 ablation: weight-update consistency under per-factor perturbation. Each cell shows the mean residual weight the model assigned to the perturbed factor across all $N$ perturbations of that anchor. Bottom-row models (closed-source frontier) cluster near $0$. Their reported per-factor weights under the cued $P_2$ probe drop cleanly when the corresponding factor is rewritten as neutral. Top-row models (open-weight Bedrock) carry substantial residual weight on perturbed factors. The Sonnet-Barker outlier ($\bar{w} = 4.0$, driven by $w_{F3} = 20$ on the perturbation of factor F3) reflects the canonical-anchoring effect on Barker's ``feasibility of safer alternative design.'' The C2 control measures consistency between probe and perturbation under shared syntactic cues. A cleaner causal reading would require cue-free perturbations (see Section~\ref{sec:limitations}).}
+\caption{Historical C2 plot (pending valid-only regeneration): weight-update consistency under per-factor perturbation. Each cell shows the mean residual weight the model assigned to the perturbed factor across all $N$ perturbations of that anchor. Bottom-row models (closed-source frontier) cluster near $0$. Their reported per-factor weights under the cued $P_2$ probe drop cleanly when the corresponding factor is rewritten as neutral. Top-row models (open-weight Bedrock) carry substantial residual weight on perturbed factors. The Sonnet-Barker outlier ($\bar{w} = 4.0$, driven by $w_{F3} = 20$ on the perturbation of factor F3) reflects the canonical-anchoring effect on Barker's ``feasibility of safer alternative design.'' The C2 control measures consistency between probe and perturbation under shared syntactic cues. A cleaner causal reading would require cue-free perturbations (see Section~\ref{sec:limitations}).}
 \label{fig:c2}
 \end{figure}
 
@@ -277,7 +277,7 @@ The pattern across model families:
 
 \textbf{Sonnet is mostly consistent with one notable outlier.} Mean residual: $1.7\%$. Two perturbations have $w = 5\%$ and one (Sonnet on Barker F3) has $w = 20\%$ even after F3 has been explicitly perturbed; the remaining $15$ are $0.0\%$. The $20\%$ outlier is on the same canonical Barker factor that GPT-5.4 sits stably above the threshold on under $P_3$ (Section~\ref{sec:p3}). Sonnet appears to retain canonical anchoring on Barker F3 across both probe families.
 
-\textbf{Bedrock open-weight models are less consistent at the per-factor level.} Mean residuals: DeepSeek $5.3\%$, Mistral $5.0\%$, Scout $4.4\%$, Qwen3 Next $3.8\%$, Maverick $3.1\%$. The perturbed factor frequently retains $5$--$20\%$ of weight even after explicit neutralization. The open-weight models do update their attributions when factors change, but with more residual on the perturbed factor than the closed-source configurations in this sample.
+\textbf{Bedrock open-weight models are less consistent at the per-factor level.} Valid-only mean residuals: DeepSeek $6.3\%$ across $15$ valid trials (three invalid attempts excluded), Mistral $5.0\%$, Scout $4.4\%$, Qwen3 Next $3.8\%$, Maverick $3.1\%$. The perturbed factor frequently retains $5$--$20\%$ of weight even after explicit neutralization. The open-weight models do update their attributions when factors change, but with more residual on the perturbed factor than the closed-source configurations in this sample.
 
 The C2 ablation tests whether the cued $P_2$ probe's reported weights are consistent with per-factor sensitivity: when factor $i$ is rewritten to a neutral value, does the model's reported weight on factor $i$ drop to zero? For closed-source models the data show that it does. We do not interpret this as causal faithfulness in the strong sense, because both the $P_2$ prompt and the C2 perturbations contain the same syntactic neutralization cues (\S\ref{sec:limitations}); the C2 control therefore measures \emph{weight-update consistency under prompt-aligned perturbation}, not causal attention. The cleaner causal test would use cue-free C2 perturbations and is left as future work.
 
@@ -287,12 +287,12 @@ Combining the $P_3$ and C2 results yields a descriptive two-dimensional summary 
 
 \begin{itemize}
 \item \textbf{Closed-source frontier models} in this pilot (Sonnet, Opus, GPT-5.4 via Anthropic and OpenAI APIs at default temperature) show low C2 residual on the perturbed factor (mean $0.0\%$--$1.7\%$ across the three closed-source configurations) but retain non-zero weight on the neutralized factor under $P_3$ on CF-Barker.
-\item \textbf{Open-weight Bedrock models} in this pilot (DeepSeek, Mistral, Llama 4 Maverick/Scout, Qwen3 Next via AWS Bedrock at $T = 0$) show the inverse: $w_{\text{neut}} = 0$ on CF-Barker under $P_3$ but higher C2 residual on perturbed factors (mean $3.1\%$--$5.3\%$ across the five Bedrock configurations).
+\item \textbf{Open-weight Bedrock models} in this pilot (DeepSeek, Mistral, Llama 4 Maverick/Scout, Qwen3 Next via AWS Bedrock at $T = 0$) show the inverse: $w_{\text{neut}} = 0$ on CF-Barker under $P_3$ but higher C2 residual on perturbed factors (mean $3.1\%$--$6.3\%$ across the five Bedrock configurations, with DeepSeek $n=15$ valid C2 outputs).
 \end{itemize}
 
 Neither group is uniformly more faithful than the other on this pilot. We describe this as an asymmetric profile rather than a family-level claim; replication on additional models within each lab and on more cases is required to test whether the pattern is a property of model class or of the particular configurations and backends in our sample.
 
-Figure~\ref{fig:asymmetry} visualizes the asymmetry: each model is one point in a $2$D space defined by its mean C2 residual on the in-distribution anchors (x-axis) and its mean weight on the neutralized factor under $P_3$ on CF-Barker (y-axis). The closed-source frontier models cluster in the upper-left (low C2 residual, high $P_3$ weight); the open-weight Bedrock models cluster in the lower-right (higher C2 residual, near-zero $P_3$ weight). No model occupies the lower-left (faithful on both axes); no model occupies the upper-right (unfaithful on both axes).
+The historical Figure~\ref{fig:asymmetry} remains an uncorrected illustration and must be regenerated with valid-only C2 values before submission. It visualizes the originally reported asymmetry: each model is one point in a $2$D space defined by its mean C2 residual on the in-distribution anchors (x-axis) and its mean weight on the neutralized factor under $P_3$ on CF-Barker (y-axis). The closed-source frontier models cluster in the upper-left (low C2 residual, high $P_3$ weight); the open-weight Bedrock models cluster in the lower-right (higher C2 residual, near-zero $P_3$ weight). No model occupies the lower-left (faithful on both axes); no model occupies the upper-right (unfaithful on both axes).
 
 \begin{figure}[t]
 \centering
