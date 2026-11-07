@@ -29,21 +29,21 @@
 \author{Venkateshwar Reddy Jambula}
 \affil{Pranaalpha Labs\\\texttt{venkateshwar.jambula@pranaalpha.com}}
 
-\date{April 2026}
+\date{April 2026; corrected working draft November 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
 \noindent
-When you ask a large language model to weigh several factors and reach a decision, how do you know whether it actually weighed them all? The standard test is to ask the model directly: ``which factor mattered most?'' On a small pilot of US tort balancing tests, we find that the answer depends a lot on how the question is phrased, and the dependence looks different across model families.
+When large language models report which factors matter in a multi-factor decision, what exactly do those reports measure? We examine attribution elicitation on a small pilot of multi-factor legal decisions using eight model configurations from six labs. On three counterfactual cases, a single-factor question and a cued full-weight-vector question produce sharply different classifications. These questions and their thresholds are not equivalent, so their disagreement establishes \emph{probe sensitivity}, not which report reveals internal reasoning.
 
 \smallskip
-We ran eight frontier models from six labs (Anthropic, OpenAI, DeepSeek, Mistral, Meta, Alibaba) on the same cases under four probing techniques: a top-1 single-factor probe, a full-distribution weighted-rank probe, an adversarial variant of the weighted-rank probe that removes surface cues from the case text, and a per-factor ablation control. The four probes disagree with each other in a consistent direction. Closed-source frontier models handle the per-factor ablation cleanly but retain weight on the neutralized factor under the adversarial probe. Open-weight Bedrock models show the opposite pattern. Neither group is uniformly more faithful.
-
-\smallskip
-On an adversarial variant of \emph{Cabral v.\ Ralphs Grocery}, GPT-5.4 produces a two-mode response distribution whose groups look like the two textbook strategies for multi-attribute decisions (weighted-additive integration and lexicographic single-factor default; \citealt{payne1993}). We release the benchmark, the four probing harnesses, and all 350+ raw model outputs.
+We add cue-reduced adversarial wordings and per-factor neutralization trials. An audit of the 306 archived weighted-response records finds 12 malformed factor vectors; invalid responses are retained but excluded from valid-only estimates. In the C2 ablation arm, 141 of 144 recorded vectors are valid. On one adversarial Cabral variant family, GPT-5.4 produces 7 author-designated wrong outcomes in 22 valid trials, associated with high self-reported weight on a disputed factor; the partition was selected after inspecting the data and is exploratory. We release prompts, raw outputs, validation scripts, and explicit limitations. None of these black-box self-report probes validates a causal mechanism of internal reasoning.
 \end{abstract}
+
+\smallskip
+\noindent\textbf{Revision status.} Corrected working draft, not a conference-ready or independently adjudicated study. Historical plots calculated using invalid archived records require regeneration from valid-only analysis before submission. The April SSRN DOI is unchanged.
 
 \noindent\rule{\linewidth}{0.4pt}
 \vspace{-2pt}
