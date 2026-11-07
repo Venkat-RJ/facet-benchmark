@@ -70,7 +70,7 @@ The paper has three contributions. First, the four-probe methodology itself: a w
 \item \textbf{Four probing techniques.} (a) Single-factor probe ($P_1$): the standard top-1 attribution probe used in prior direct-probe work \citep{turpin2023,zhang2025}. (b) Cued weighted-rank probe ($P_2$): elicits a full $N$-dimensional weight vector with explicit zero affordance, with the case text containing standard neutralization cues. (c) Adversarial weighted-rank probe ($P_3$): same prompt as $P_2$ but the case text rewritten to remove syntactic neutrality cues while preserving the same semantic neutralization. (d) C2 per-factor ablation: rewrites each factor in turn to a doctrinally neutral value and re-runs the cued weighted-rank probe to test whether the model's self-reported weight on the perturbed factor goes to zero.
 \item \textbf{A pilot benchmark with replication on the headline cells.} 13 instances + 4 adversarial variants. 8 model configurations across 6 labs. 350+ raw model outputs. Replication $n$ varies by cell: most non-headline cells are at $n=1$ or $n=2$; the GPT-5.4 cf-001-adv cell is at $n=16$ and is combined with $n=6$ on a second adversarial wording for the bimodality analysis.
 \item \textbf{A trial-level two-group observation on GPT-5.4.} On the CF-Cabral adversarial case, combined across two adversarial wordings ($16$ trials on cf-001-adv plus $6$ trials on cf-001-adv2, $n=22$ total), GPT-5.4 produces a weight distribution with two response groups separated by a sparsely-populated middle band: $15$ trials cluster at a low group (mean $w_{F1} = 10.3\%$, all correct outcome) and $7$ trials cluster at a high group (mean $w_{F1} = 44.3\%$, all wrong outcome), with only $2$ trials in the $20$--$39\%$ range. The combined wrong-outcome rate is $7/22 = 32\%$ (Wilson 95\% CI $[16\%, 53\%]$). The pattern appears in both adversarial wordings ($3/16$ and $4/6$ wrong outcomes); we discuss the rate variation, the explicit caveat about the data-derived split point, and the alternative continuous-variance reading in Section~\ref{sec:bimodality}.
-\item \textbf{Per-factor ablation under the cued probe.} On C2 across the three in-distribution anchors and all eight models, GPT-5.4's reported weights drop to $0.0\%$ on every perturbed factor (across $18$ ablations); Opus to $0.8\%$ on average; Sonnet to $1.7\%$. Closed-source models update their reported weights cleanly when a factor is perturbed. Open-weight Bedrock models are less consistent ($3.1$--$6.3\%$ mean residual across the five Bedrock configurations). The two probe families ($P_3$ adversarial and C2 ablation) report different patterns for the two model groups; we describe this as an asymmetric faithfulness profile rather than a strong claim about which family is more faithful.
+\item \textbf{Per-factor ablation under the cued probe.} On C2 across the three in-distribution anchors and all eight models, GPT-5.4's reported weights drop to $0.0\%$ on every perturbed factor (across $18$ ablations); Opus to $0.8\%$ on average; Sonnet to $1.7\%$. Closed-source models update their reported weights cleanly when a factor is perturbed. Open-weight Bedrock models are less consistent ($3.1$--$6.3\%$ mean residual across the five Bedrock configurations). The two probe families ($P_3$ adversarial and C2 ablation) report different patterns for the two model groups; we describe this as an asymmetric attribution-response profile rather than a strong claim about which family is more faithful.
 \item \textbf{An open harness and dataset.} Four probe wrappers runnable end-to-end via Python scripts. The benchmark instances, the adversarial counterfactual variants, the C2 perturbation files, and all $350+$ raw model outputs are released under MIT (code) and CC BY 4.0 (data).
 \end{enumerate}
 
@@ -284,7 +284,7 @@ The pattern across model families:
 
 The C2 ablation tests whether the cued $P_2$ probe's reported weights are consistent with per-factor sensitivity: when factor $i$ is rewritten to a neutral value, does the model's reported weight on factor $i$ drop to zero? For closed-source models the data show that it does. We do not interpret this as causal faithfulness in the strong sense, because both the $P_2$ prompt and the C2 perturbations contain the same syntactic neutralization cues (\S\ref{sec:limitations}); the C2 control therefore measures \emph{weight-update consistency under prompt-aligned perturbation}, not causal attention. The cleaner causal test would use cue-free C2 perturbations and is left as future work.
 
-\subsection{The Asymmetric Faithfulness Profile}
+\subsection{The Asymmetric Attribution-Response Profile}
 
 Combining the $P_3$ and C2 results yields a descriptive two-dimensional summary on this pilot. The summary is bounded by three confounds we cannot disentangle at $n = 8$ models: model family, inference backend, and sampling temperature (Sections~\ref{sec:p3} and~\ref{sec:limitations}).
 
@@ -300,7 +300,7 @@ The historical Figure~\ref{fig:asymmetry} remains an uncorrected illustration an
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.85\linewidth]{fig5_asymmetry.png}
-\caption{The asymmetric faithfulness profile in two dimensions, descriptive only. X-axis: mean C2 residual weight on perturbed factors across the three in-distribution anchors (lower = cleaner per-factor weight updating). Y-axis: mean weight on the neutralized factor under $P_3$ on CF-Barker (lower = more cue-robust). Open-weight Bedrock models (green) cluster in the lower-right (cue-robust on CF-Barker, less clean per-factor updating). Closed-source frontier models (red) cluster in the upper-left (clean per-factor updating, less cue-robust on CF-Barker). At $n=8$ models the visual pattern is descriptive; we do not claim a population-level correlation.}
+\caption{The asymmetric attribution-response profile in two dimensions, descriptive only. X-axis: mean C2 residual weight on perturbed factors across the three in-distribution anchors (lower = cleaner per-factor weight updating). Y-axis: mean weight on the neutralized factor under $P_3$ on CF-Barker (lower = more cue-robust). Open-weight Bedrock models (green) cluster in the lower-right (cue-robust on CF-Barker, less clean per-factor updating). Closed-source frontier models (red) cluster in the upper-left (clean per-factor updating, less cue-robust on CF-Barker). At $n=8$ models the visual pattern is descriptive; we do not claim a population-level correlation.}
 \label{fig:asymmetry}
 \end{figure}
 
@@ -331,7 +331,7 @@ Third, the C2 ablation shows that the cued $P_2$ probe's reported weights are co
 
 \subsection{Why Might the Two Probe Families Reveal Different Failure Modes?}
 
-We report the asymmetric faithfulness profile (closed-source surgical at C2 / cue-dependent at $P_3$; open-weight cue-robust at $P_3$ / less surgical at C2) without endorsing a mechanism. Several possibilities exist:
+We report the asymmetric attribution-response profile (closed-source surgical at C2 / cue-dependent at $P_3$; open-weight cue-robust at $P_3$ / less surgical at C2) without endorsing a mechanism. Several possibilities exist:
 
 \textbf{Training-data exposure on canonical doctrines.} Closed-source frontier models from Anthropic and OpenAI may have seen substantially more legal training data and have stronger canonicity priors on doctrinal factors, particularly the most textbook-canonical ones like Barker F3. The Bedrock open-weight models may have weaker priors and therefore less to pattern-match against.
 
@@ -341,7 +341,7 @@ We report the asymmetric faithfulness profile (closed-source surgical at C2 / cu
 
 \textbf{Sample size.} $n = 8$ models is small. Within-family scale sweeps would help disentangle whether the observed family-level patterns are properties of the model class or of the particular configurations.
 
-We do not endorse any of these mechanisms. The empirical finding is the asymmetric faithfulness profile; the mechanism is future work.
+We do not endorse any of these mechanisms. The empirical finding is the asymmetric attribution-response profile; the mechanism is future work.
 
 \subsection{Connection to CoT Unfaithfulness}
 
@@ -385,7 +385,7 @@ None of the four probes is a faithfulness oracle. C2 ablation tests whether the 
 
 \textbf{Mechanistic interpretability on the GPT-5.4 two-group result.} The GPT-5.4 CF-Cabral observation is a tractable handle for asking whether the two response groups correspond to distinct internal trajectories. Comparing attention patterns and intermediate-layer activations between low-group and high-group trials on the same prompt would test whether the two groups reflect different attention pathways or a single continuous variable.
 
-\textbf{Within-family scale sweeps.} Test whether the asymmetric faithfulness profile tracks active parameter count within Llama 4 (Scout vs Maverick) and within an Anthropic Haiku/Sonnet/Opus sweep. The current result shows the family-level pattern but does not isolate scale.
+\textbf{Within-family scale sweeps.} Test whether the asymmetric attribution-response profile tracks active parameter count within Llama 4 (Scout vs Maverick) and within an Anthropic Haiku/Sonnet/Opus sweep. The current result shows the family-level pattern but does not isolate scale.
 
 \textbf{Reasoning-mode replication.} DeepSeek-R1, GPT-5.4 thinking, and Gemini reasoning variants are unevaluated. Particularly important to test whether explicit chain-of-thought reasoning suppresses or amplifies the bimodality.
 
@@ -401,7 +401,7 @@ None of the four probes is a faithfulness oracle. C2 ablation tests whether the 
 
 The four-probe progression illustrates a methodological point that should generalize beyond the present benchmark: \textbf{faithfulness measurement is itself a multi-probe problem.} Different probes activate different aspects of the model's attribution self-report and reveal different failure modes. Reporting a single-probe faithfulness number without specifying the probe's pattern-matching surface and without per-factor ablation validation is potentially uninformative.
 
-For regulated decision domains where LLM faithfulness is being audited, the practical implication is that audit pipelines built on top-1 or top-$k$ attribution probes (the dominant format in current explainability tooling) may under-report dissociation in some cases, and may over-report faithfulness in others. Under-reporting comes from the $P_1$ projection artifact we see in this pilot: forcing the model to name one factor projects a distributed weight vector down onto whichever factor is most canonical in training data. Over-reporting comes from the $P_2$ cue-matching effect: when the case text flags the irrelevant factor with the same words the prompt uses, the model looks faithful without the test actually interrogating its reasoning. A multi-probe protocol (P1 for top-1 attribution, P2 for distributed weights, P3 for cue-robustness, C2 for per-factor weight-update consistency) gives a more complete picture than any single probe. The protocol itself is one experimental design among many, and this pilot is small, so the prescription should be read with both caveats in mind.
+For applications that audit LLM decisions, our pilot illustrates a measurement hazard: factor-attribution self-reports depend on what the model is asked to report and on the cues present in its case description. The P1 and P2 scores use different estimands, so neither one is a validated estimate of causal faithfulness. P3 examines cue sensitivity; C2 describes self-report changes under cue-laden rewrites. A multi-probe protocol is useful as a diagnostic but must be compared with intervention-based baselines, negative controls and independently adjudicated cases before it can support strong audit conclusions.
 
 The two-group result on GPT-5.4 CF-Cabral is reported in detail in Section~\ref{sec:bimodality}. If it replicates on additional models, additional cases, and additional adversarial wordings, the implication would be that LLM behavior on multi-factor reasoning under adversarial probes is more usefully described as two response groups than as a single continuous distribution. Whether that holds is the central open empirical question this benchmark leaves for future work.
 
