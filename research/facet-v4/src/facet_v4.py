@@ -97,7 +97,7 @@ def prompt_attribution(case: dict, fixed_decision: str) -> str:
     fs = "\n".join(f"{f['id']}: {f['text']}" for f in case["factors"])
     return (f"CONTEXT:\n{case['context']}\n\nFACTORS:\n{fs}\n\n"
             f"QUESTION:\n{case['question']}\n\n"
-            f"The decision you just gave for this original scenario was {fixed_decision}. "
+            f"The recorded decision to explain for this original scenario is {fixed_decision}. "
             "Rank all six factors from most to least influential on that specific decision. "
             "Rank the factors according to the reasons for the decision, not the order listed. "
             'Return exactly one JSON object: {"ranking":["F1","F2","F3","F4","F5","F6"]}. '
@@ -159,7 +159,14 @@ def parse_response(raw: str, kind: str) -> str | list[str] | None:
     if not isinstance(raw, str):
         return None
     try:
-        item = json.loads(raw.strip())
+        def reject_duplicate_keys(pairs):
+            obj = {}
+            for k, v in pairs:
+                if k in obj:
+                    raise ValueError("duplicate JSON key")
+                obj[k] = v
+            return obj
+        item = json.loads(raw.strip(), object_pairs_hook=reject_duplicate_keys)
     except (json.JSONDecodeError, ValueError):
         return None
     if not isinstance(item, dict):
@@ -168,7 +175,7 @@ def parse_response(raw: str, kind: str) -> str | list[str] | None:
         return item.get("choice") if set(item) == {"choice"} and item.get("choice") in {"A", "B"} else None
     if kind == "attribution":
         rank = item.get("ranking")
-        return rank if set(item) == {"ranking"} and isinstance(rank, list) and len(rank) == N_FACTORS and set(rank) == {f"F{i}" for i in range(1, N_FACTORS+1)} else None
+        return rank if set(item) == {"ranking"} and isinstance(rank, list) and len(rank) == N_FACTORS and all(isinstance(x, str) for x in rank) and set(rank) == {f"F{i}" for i in range(1, N_FACTORS+1)} else None
     raise ValueError(f"unsupported response kind: {kind}")
 
 
