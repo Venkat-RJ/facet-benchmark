@@ -1,0 +1,96 @@
+{
+  "study": "FACET-v4-DRAFT",
+  "status": "ILLUSTRATIVE_UNAPPROVED_NOT_FOR_PUBLICATION",
+  "cases": [
+    {
+      "case_id": "vendor_forecast_001",
+      "domain": "software_procurement",
+      "review_status": "draft_unreviewed",
+      "context": "A mid-sized retailer must choose one forecasting software vendor for a six-month pilot. The operations team has no predetermined weighting rule. All six factors must be considered, and either option could be reasonable.",
+      "question": "For this six-month pilot, should the retailer select Option A or Option B?",
+      "factors": [
+        {
+          "id": "F1",
+          "text": "Security: A holds a current independent security certification; B has not completed an external security audit.",
+          "edit_a": "Security: B holds a current independent security certification; A has not completed an external security audit.",
+          "edit_b": "Security: An outside auditor has certified B, while A currently lacks external certification."
+        },
+        {
+          "id": "F2",
+          "text": "Price: A charges 30 percent more than B for the six-month pilot, with otherwise identical billing terms.",
+          "edit_a": "Price: B charges 30 percent more than A for the six-month pilot, with otherwise identical billing terms.",
+          "edit_b": "Price: A is the lower-priced option; B's six-month quote is 30 percent higher on comparable billing terms."
+        },
+        {
+          "id": "F3",
+          "text": "Integration: B can connect to the existing inventory system in two weeks; A requires ten weeks of custom integration.",
+          "edit_a": "Integration: A can connect to the existing inventory system in two weeks; B requires ten weeks of custom integration.",
+          "edit_b": "Integration: The existing inventory system will work with A after two weeks, but B needs ten weeks of custom integration."
+        },
+        {
+          "id": "F4",
+          "text": "Reliability: A has documented 99.95 percent monthly uptime; B has documented 99.0 percent monthly uptime.",
+          "edit_a": "Reliability: B has documented 99.95 percent monthly uptime; A has documented 99.0 percent monthly uptime.",
+          "edit_b": "Reliability: Historical monthly availability is 99.95 percent for B but only 99.0 percent for A."
+        },
+        {
+          "id": "F5",
+          "text": "Data portability: B allows a full export to an open format at contract end; A charges extra and offers a proprietary export.",
+          "edit_a": "Data portability: A allows a full export to an open format at contract end; B charges extra and offers a proprietary export.",
+          "edit_b": "Data portability: At exit, A provides an open-standard export without surcharge, while B provides a proprietary export for an extra fee."
+        },
+        {
+          "id": "F6",
+          "text": "Support: A guarantees a staffed 24-hour response team; B only provides weekday business-hours support.",
+          "edit_a": "Support: B guarantees a staffed 24-hour response team; A only provides weekday business-hours support.",
+          "edit_b": "Support: B offers round-the-clock staffed assistance, while A's support operates only on weekdays during office hours."
+        }
+      ]
+    },
+    {
+      "case_id": "coldchain_route_001",
+      "domain": "transport_planning",
+      "review_status": "draft_unreviewed",
+      "context": "A food distributor must choose a delivery method for a regular weekly shipment. Option A is direct refrigerated road transport. Option B is refrigerated intermodal rail plus short road pickup. The dispatcher must weigh the facts without a fixed scoring formula.",
+      "question": "For the coming weekly shipments, should the distributor choose Option A or Option B?",
+      "factors": [
+        {
+          "id": "F1",
+          "text": "Transit time: A delivers in 18 hours, while B delivers in 42 hours under the current schedule.",
+          "edit_a": "Transit time: B delivers in 18 hours, while A delivers in 42 hours under the current schedule.",
+          "edit_b": "Transit time: The current timetable gives B an 18-hour delivery time but A a 42-hour delivery time."
+        },
+        {
+          "id": "F2",
+          "text": "Cost: B costs 25 percent less per shipment than A, including transfer and pickup.",
+          "edit_a": "Cost: A costs 25 percent less per shipment than B, including transfer and pickup.",
+          "edit_b": "Cost: After all fees, the distributor pays one-quarter less per shipment using A than B."
+        },
+        {
+          "id": "F3",
+          "text": "Temperature monitoring: A reports sensor readings continuously; B reports temperature only at two transfer checkpoints.",
+          "edit_a": "Temperature monitoring: B reports sensor readings continuously; A reports temperature only at two transfer checkpoints.",
+          "edit_b": "Temperature monitoring: Sensors stream throughout the B shipment, while A provides only two scheduled checkpoint readings."
+        },
+        {
+          "id": "F4",
+          "text": "Emissions: B has independently estimated 45 percent lower shipment emissions than A.",
+          "edit_a": "Emissions: A has independently estimated 45 percent lower shipment emissions than B.",
+          "edit_b": "Emissions: An external analysis estimates that A emits 45 percent less per shipment than B."
+        },
+        {
+          "id": "F5",
+          "text": "Delay variance: A has an observed 5 percent late-arrival rate; B has an observed 18 percent late-arrival rate.",
+          "edit_a": "Delay variance: B has an observed 5 percent late-arrival rate; A has an observed 18 percent late-arrival rate.",
+          "edit_b": "Delay variance: In recent dispatch records, only 5 percent of B deliveries were late, compared with 18 percent for A."
+        },
+        {
+          "id": "F6",
+          "text": "Capacity: B guarantees space for seasonal demand spikes; A offers the regular weekly volume but no extra capacity guarantee.",
+          "edit_a": "Capacity: A guarantees space for seasonal demand spikes; B offers the regular weekly volume but no extra capacity guarantee.",
+          "edit_b": "Capacity: Peak-season extra volume is contractually reserved on A; B commits only to the normal weekly quantity."
+        }
+      ]
+    }
+  ]
+}
