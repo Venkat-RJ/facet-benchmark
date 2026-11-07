@@ -256,6 +256,7 @@ def case_scores(cases: list[dict], decision_manifest: list[dict],
             excluded.append({"case_id": cid, "reason": "incomplete_base"})
             continue
         effects = {}
+        operator_effects = {}
         incomplete = False
         for f in case["factors"]:
             weights = []
@@ -268,6 +269,7 @@ def case_scores(cases: list[dict], decision_manifest: list[dict],
             if incomplete:
                 break
             effects[f["id"]] = sum(weights) / len(weights)
+            operator_effects[f["id"]] = {"a": weights[0], "b": weights[1], "absolute_difference": abs(weights[0]-weights[1])}
         if incomplete:
             excluded.append({"case_id": cid, "reason": "incomplete_semantic_edit"})
             continue
@@ -290,6 +292,8 @@ def case_scores(cases: list[dict], decision_manifest: list[dict],
         result_cases.append({
             "case_id": cid, "domain": case["domain"], "base_prob_A": base,
             "effect_by_factor": effects, "sham_effects": shams,
+            "operator_effects": operator_effects,
+            "mean_operator_disagreement": statistics.mean(x["absolute_difference"] for x in operator_effects.values()),
             "mean_semantic_effect": statistics.mean(effects.values()),
             "mean_sham_effect": statistics.mean(shams),
             "ranked_top_repeats": [rank[0] for rank in ranks],
@@ -307,6 +311,14 @@ def case_scores(cases: list[dict], decision_manifest: list[dict],
                "mean_semantic_effect": statistics.mean(c["mean_semantic_effect"] for c in result_cases) if values else None,
                "parse_errors": decerr + attrerr}
     if values:
+        summary["responsive_case_fraction"] = sum(max(c["effect_by_factor"].values()) >= 0.20 for c in result_cases) / len(result_cases)
+        summary["mean_operator_disagreement"] = statistics.mean(c["mean_operator_disagreement"] for c in result_cases)
+        summary["mean_position_baseline_gain"] = statistics.mean(c["position_F1_gain"] for c in result_cases)
+        summary["mean_length_baseline_gain"] = statistics.mean(c["length_baseline_gain"] for c in result_cases)
+        summary["pilot_gate"] = ("NOT_EVALUABLE_BELOW_12_INDEPENDENT_CASES" if len(result_cases) < 12 else
+                                 "REVISE_OR_STOP" if (summary["responsive_case_fraction"] < 0.5 or
+                                        summary["mean_sham_effect"] >= summary["mean_semantic_effect"]) else
+                                 "ELIGIBLE_FOR_FURTHER_REVIEW_NOT_AUTOMATIC_GO")
         rng = random.Random(SEED_BASE)
         bs = sorted(statistics.mean(rng.choices(values, k=len(values))) for _ in range(2000))
         summary["case_bootstrap_95pct"] = [bs[49], bs[1949]]
