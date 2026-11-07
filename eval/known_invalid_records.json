@@ -1,0 +1,18 @@
+{
+  "audited_commit": "54c26e85ec93c92fd087abcb3cbe8c1e1571081d",
+  "reason": "Legacy invalid or missing factor vectors. Excluded rather than overwritten.",
+  "known_invalid_files": [
+    "results/weighted-probe/facet-neg-cf-001-adv2-bedrock-deepseek.v3.2-20260413-132055.json",
+    "results/weighted-probe/facet-neg-cf-001-bedrock-deepseek.v3.2-20260412-234555.json",
+    "results/weighted-probe/facet-neg-cf-001-bedrock-mistral.mistral-large-3-675b-instruct-20260412-234557.json",
+    "results/weighted-probe/facet-neg-cf-001-bedrock-qwen.qwen3-next-80b-a3b-20260412-234558.json",
+    "results/weighted-probe/facet-neg-cf-001-bedrock-us.meta.llama4-maverick-17b-instruct-v1_0-20260412-234559.json",
+    "results/weighted-probe/facet-neg-cf-002-bedrock-us.deepseek.v3-2_0-20260412-234524.json",
+    "results/weighted-probe/facet-neg-cf-002-opus-20260412-233846.json",
+    "results/weighted-probe/facet-neg-cf-003-adv-bedrock-deepseek.v3.2-20260413-114927.json",
+    "results/weighted-probe/facet-neg-cf-003-adv-bedrock-deepseek.v3.2-20260413-131632.json",
+    "results/weighted-probe/c2/facet-neg-0002-c2-f2-bedrock-deepseek.v3.2-rescued.json",
+    "results/weighted-probe/c2/facet-neg-0003-c2-f7-bedrock-deepseek.v3.2-20260413-133932.json",
+    "results/weighted-probe/c2/facet-neg-0004-c2-f2-bedrock-deepseek.v3.2-20260413-134123.json"
+  ]
+}
