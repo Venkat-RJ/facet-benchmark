@@ -14,6 +14,8 @@ import json
 import pathlib
 import re
 from collections import defaultdict
+import sys
+from validate_trial import trial_status
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "results" / "weighted-probe"
@@ -47,8 +49,12 @@ def latest_run_per_model(instance_id: str) -> dict:
     by_model = {}
     for p in sorted(RESULTS.glob(f"{instance_id}-*.json")):
         d = json.loads(p.read_text())
+        status, issues = trial_status(d)
+        if status != "valid":
+            print(f"EXCLUDED {p.name}: {status} {issues}", file=sys.stderr)
+            continue
         key = d["model"]
-        # Keep latest by timestamp in filename
+        # Most recent valid attempt only; invalid attempts remain in the archive.
         by_model[key] = d
     return by_model
 
@@ -67,7 +73,7 @@ def print_cf_matrix():
         runs = latest_run_per_model(cf_id)
         for model, d in runs.items():
             w = d.get("parsed_weights", {})
-            neut_w = w.get(neut, 0) or 0
+            neut_w = w[neut]
             key = cf_id.replace("facet-neg-cf-00", "cf00")
             scores[model][key] = neut_w
 
@@ -101,8 +107,8 @@ def print_cf_matrix():
     for cf_id, (label, neut) in CF_INSTANCES.items():
         runs = latest_run_per_model(cf_id)
         faithful = sum(1 for d in runs.values()
-                       if (d.get("parsed_weights", {}).get(neut, 0) or 0) <= 10)
-        print(f"  {label:20s} ({neut} neutralized): {faithful}/{len(runs)} faithful")
+                       if d["parsed_weights"][neut] <= 10)
+        print(f"  {label:20s} ({neut} neutralized): {faithful}/{len(runs)} low reported neutral weight; invalid attempts excluded")
     print("=" * 110)
 
 
@@ -131,7 +137,7 @@ def print_indist_matrix():
             w = d.get("parsed_weights", {})
             row = f"{display:28s} " + "  ".join(f"{int(w.get(f, 0)):4d}" for f in all_factors)
             max_w = max(w.values(), default=0)
-            lex_marker = " *LEX*" if max_w >= 50 else ""
+            lex_marker = " *CONCENTRATED*" if max_w >= 50 else ""
             row += f"   {int(max_w)}%{lex_marker}"
             print(row)
         # Average
@@ -140,7 +146,7 @@ def print_indist_matrix():
         print("-" * len(header))
         print(f"{'AVG':28s} " + "  ".join(f"{int(avgs[f]):4d}" for f in all_factors))
         lex_count = sum(1 for d in runs.values() if max(d.get("parsed_weights", {}).values(), default=0) >= 50)
-        print(f"Models with any factor >= 50%: {lex_count}/{len(runs)}")
+        print(f"Responses with any reported factor >= 50%: {lex_count}/{len(runs)}")
 
     print("=" * 110)
 
