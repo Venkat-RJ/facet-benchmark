@@ -1,4 +1,10 @@
-"""Mechanically verify numeric claims in latex/main_v3.tex against actual JSON data.
+"""LEGACY arithmetic verifier for the historical v3 paper. NOT a validity audit.
+
+This script is retained to reproduce the old numbers. It does not exclude
+malformed vectors, derive paired counts from raw data or establish causal claims.
+Use recompute_valid_only.py for the corrected archived-data audit.
+
+Mechanically verify numeric claims in latex/main_v3.tex against actual JSON data.
 
 This script extracts numeric claims from the paper text and re-derives each one
 from the raw model output files in results/. Any mismatch is a paper bug.
@@ -269,6 +275,8 @@ def fmt(v):
         return str(v)
     return str(v)
 
+
+print("WARNING: LEGACY ARITHMETIC ONLY. May count malformed vectors; see recompute_valid_only.py.")
 
 pass_count = 0
 fail_count = 0
