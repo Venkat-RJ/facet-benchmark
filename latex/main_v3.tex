@@ -103,6 +103,9 @@ The methodology is not specific to law. Section~\ref{sec:future} discusses plann
 
 \subsection{Related Work}
 
+\textbf{Operator dependence and intervention-based faithfulness.} \citet{basu2026ice} show that explanation-faithfulness scores can depend on the intervention operator, and compare results against random baselines. \citet{matton2025walk} estimate concept-level causal effects under counterfactual input modifications, while \citet{siegel2024probabilities} evaluate correlations between explanations and shifts in predicted label distributions. Unlike these methods, FACET's pilot chiefly compares \emph{elicited attribution self-reports} in multi-factor legal scenarios. Our data do not establish causal faithfulness or mechanistic novelty over intervention-based methods. A controlled comparison with independent cases and negative controls is required before stronger claims.
+
+
 \textbf{LLM faithfulness measurement.} \citet{turpin2023} and \citet{lanham2023} established that chain-of-thought traces in LLMs are systematically unfaithful to the reasoning that produced an answer. \citet{jacovi2020} formalized the property and distinguishes \emph{plausibility} (does the explanation look reasonable?) from \emph{faithfulness} (does it correspond to the model's actual computation?). \citet{madsen2024} construct faithfulness-measurable masked language models. The present work measures attribution faithfulness via direct probes rather than chain-of-thought traces and shows that probe format itself materially affects what is measured.
 
 \textbf{Legal LLM benchmarks.} LegalBench \citep{guha2023}, LEXam \citep{katz2025}, and MSLR \citep{yu2025} measure outcome accuracy on legal reasoning tasks but do not directly probe whether multi-factor integration is happening at the attribution level. The present work is complementary: it does not measure whether models can answer legal questions correctly (they mostly can on the in-distribution anchors), it measures \emph{how} they reach those answers.
@@ -372,6 +375,8 @@ None of the four probes is a faithfulness oracle. C2 ablation tests whether the 
 \textbf{Instance verification incomplete.} Factor definitions and in-case weights for the in-distribution anchors are sourced from secondary legal digests. Verification against primary opinion texts is in progress and is documented in the per-instance metadata.
 
 %==============================================================
+\noindent\textbf{Archived-record validity and harness parity.} Of 306 stored weighted-response records, 12 have incomplete or non-normalized factor vectors. Valid-only analyses exclude them; the 80/80 historical arithmetic verifier did not check this requirement. The DeepSeek P3 CF-Biakanja cell has zero valid trials, and DeepSeek C2 has 15 valid trials out of 18. Further, the original Codex P1 and P2 command wrappers used different instruction contexts, and closed-source and Bedrock model runs differ in backend and temperature. Therefore the P1/P2 contrast is observational and no controlled model-family effect has been established. The legacy figures must be regenerated with explicit valid-only denominators.
+
 \section{Future Work}
 \label{sec:future}
 %==============================================================
@@ -459,6 +464,22 @@ F.~Yu et~al.
 H.~Zhang et~al.
 \newblock Thinking longer, not always smarter: Evaluating LLM capabilities in hierarchical legal reasoning.
 \newblock \emph{arXiv preprint arXiv:2510.08710}, 2025.
+
+\bibitem[Basu and Chakraborty(2026)]{basu2026ice}
+A.~Basu and P.~Chakraborty.
+\newblock ICE: Intervention-Consistent Explanation Evaluation with Statistical Grounding for LLMs.
+\newblock In \emph{Findings of EMNLP}, pages 22349--22365, 2026.
+\newblock \url{https://aclanthology.org/2026.findings-emnlp.1055/}.
+
+\bibitem[Matton et~al.(2025)]{matton2025walk}
+K.~Matton, R.~Ness, J.~Guttag, and E.~Kiciman.
+\newblock Walk the Talk? Measuring the Faithfulness of Large Language Model Explanations.
+\newblock In \emph{ICLR}, 2025.
+
+\bibitem[Siegel et~al.(2024)]{siegel2024probabilities}
+N.~Siegel, O.-M.~Camburu, N.~Heess, and M.~Perez-Ortiz.
+\newblock The Probabilities Also Matter: A More Faithful Metric for Faithfulness of Free-Text Explanations in Large Language Models.
+\newblock In \emph{ACL Short Papers}, pages 530--546, 2024.
 
 \end{thebibliography}
 
