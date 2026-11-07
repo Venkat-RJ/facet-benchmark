@@ -22,6 +22,9 @@ import pathlib
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
+
+from validate_trial import trial_status, neutral_weight
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 INSTANCES = ROOT / "instances"
@@ -74,12 +77,14 @@ def run_one_perturbation(base_id: str, perturbation: dict, backend: str, model: 
             "--backend", backend,
             "--model", model,
         ]
+        # Identify the output produced by *this* invocation, not a previous failed run.
+        model_slug = model.replace("/", "_").replace(":", "_")
+        glob_pattern = str(ROOT / "results" / "weighted-probe" / f"{temp_id}-{backend}-{model_slug}-*.json")
+        before = set(glob.glob(glob_pattern))
         proc = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, timeout=600)
         # Locate the saved file by glob; run_weighted_probe.py writes to
         # results/weighted-probe/<temp_id>-<backend>-<model_slug>-<ts>.json
-        model_slug = model.replace("/", "_").replace(":", "_")
-        glob_pattern = str(ROOT / "results" / "weighted-probe" / f"{temp_id}-{backend}-{model_slug}-*.json")
-        matches = sorted(glob.glob(glob_pattern))
+        matches = sorted(set(glob.glob(glob_pattern)) - before)
         if not matches:
             print(f"  ! No file found for {temp_id} (pattern: {glob_pattern})", file=sys.stderr)
             return {"error": "no_save_path", "stdout": (proc.stdout + proc.stderr)[-500:]}
@@ -96,7 +101,7 @@ def run_one_perturbation(base_id: str, perturbation: dict, backend: str, model: 
         result["c2_base_weight"] = perturbation.get("base_weight", None)
         result["c2_base_directionality"] = perturbation.get("base_directionality", "")
 
-        ts = time.strftime("%Y%m%d-%H%M%S")
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%f")
         new_name = f"{base_id}-c2-{perturbation['perturbed_factor_id']}-{backend}-{model.replace('/', '_').replace(':','_')}-{ts}.json"
         new_path = RESULTS / new_name
         with open(new_path, "w") as f:
@@ -141,8 +146,14 @@ def main():
         if result.get("error"):
             summary.append((pid, None, None, result["error"]))
             continue
-        pw = result.get("parsed_weights", {})
-        nw = pw.get(pid.upper(), 0)
+        status, issues = trial_status(result)
+        if status != "valid":
+            summary.append((pid, None, None, f"excluded:{status}:{issues}"))
+            continue
+        nw = neutral_weight(result, pid.upper())
+        if nw is None:
+            summary.append((pid, None, None, "excluded:missing_perturbed_factor"))
+            continue
         raw = (result.get("raw_response") or "").strip()
         ans_lines = [l.strip() for l in raw.split("\n") if l.strip()]
         ans = ans_lines[-1] if ans_lines else "?"
