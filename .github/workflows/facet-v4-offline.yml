@@ -1,0 +1,26 @@
+name: FACET v4 offline validation
+
+on:
+  push:
+    branches:
+      - research/facet-v4-intervention-design
+  workflow_dispatch:
+
+jobs:
+  verify-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Python syntax
+        run: python3 -m compileall -q research/facet-v4/src research/facet-v4/tests
+      - name: Offline unit tests (no model calls)
+        run: python3 -m unittest discover -s research/facet-v4/tests -v
+      - name: Offline manifest integrity (zero model calls)
+        run: |
+          python3 research/facet-v4/src/facet_v4.py manifest research/facet-v4/data/example_cases_DRAFT.json --repeats 5 --output /tmp/facet-v4-stimuli.jsonl
+          python3 research/facet-v4/src/facet_v4.py validate-manifest /tmp/facet-v4-stimuli.jsonl
+          test "$(wc -l < /tmp/facet-v4-stimuli.jsonl)" -eq 150
