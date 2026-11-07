@@ -26,6 +26,7 @@ import re
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 
 from validate_trial import parse_weight_line, trial_status, sha256_text, sha256_json
 
@@ -240,7 +241,7 @@ def main():
     }
     result["trial_status"], result["trial_issues"] = trial_status(result, strict_raw=True)
 
-    ts = time.strftime("%Y%m%d-%H%M%S")
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%f")
     model_slug = args.model.replace("/", "_").replace(":", "_")
     out_path = OUT / f"{args.instance}-{args.backend}-{model_slug}-{ts}.json"
     with open(out_path, "w") as f:
