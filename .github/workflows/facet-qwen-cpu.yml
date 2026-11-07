@@ -1,0 +1,74 @@
+name: FACET real Qwen CPU integration check
+
+on:
+  push:
+    branches: [test/facet-qwen-cpu-20261107]
+    paths:
+      - .github/workflows/facet-qwen-cpu.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: facet-qwen-cpu-20261107
+  cancel-in-progress: false
+
+jobs:
+  cpu-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout isolated test branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Record execution environment
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p cpu-check
+          { date -u; uname -a; lscpu; free -h; python3 --version; cmake --version; g++ --version; git rev-parse HEAD; } > cpu-check/environment.txt
+          cat cpu-check/environment.txt
+
+      - name: Run existing validator unit tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python3 -m unittest discover -s tests -v 2>&1 | tee cpu-check/unit-tests.log
+          python3 eval/recompute_valid_only.py --known-invalid eval/known_invalid_records.json --output cpu-check/archived-valid-only.json 2>&1 | tee cpu-check/archived-audit.log
+
+      - name: Download pinned source and official model
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p /tmp/facet-llama /tmp/facet-model
+          curl --fail --location --retry 2 --max-time 180 -o /tmp/llama.tar.gz https://github.com/ggml-org/llama.cpp/archive/c02e5ab2a675c8bc1abc8b1e4cb6a93b26bdcce7.tar.gz
+          tar -xzf /tmp/llama.tar.gz --strip-components=1 -C /tmp/facet-llama
+          curl --fail --location --retry 2 --max-time 180 -o /tmp/facet-model/qwen2.5-0.5b-instruct-q4_k_m.gguf https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/6dd44a1fb35d11b5d1b28902876ce3cc9e882d0e/qwen2.5-0.5b-instruct-q4_k_m.gguf
+          echo '74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db  /tmp/facet-model/qwen2.5-0.5b-instruct-q4_k_m.gguf' | sha256sum --check
+          sha256sum /tmp/llama.tar.gz /tmp/facet-model/qwen2.5-0.5b-instruct-q4_k_m.gguf | tee cpu-check/download-checksums.txt
+
+      - name: Compile CPU inference executable
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cmake -S /tmp/facet-llama -B /tmp/facet-llama/build -DCMAKE_BUILD_TYPE=Release -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_SERVER=OFF -DLLAMA_CURL=OFF 2>&1 | tee cpu-check/cmake.log
+          timeout 360 cmake --build /tmp/facet-llama/build --parallel 2 --target llama-cli 2>&1 | tee cpu-check/build.log
+          /tmp/facet-llama/build/bin/llama-cli --help > cpu-check/llama-help.txt 2>&1
+
+      - name: Run 13 real model calls sequentially with strict time limits
+        shell: bash
+        run: |
+          set -euxo pipefail
+          timeout 240 python3 -u eval/run_qwen_cpu_smoke.py --binary /tmp/facet-llama/build/bin/llama-cli --model /tmp/facet-model/qwen2.5-0.5b-instruct-q4_k_m.gguf --output cpu-check/inference --threads 2 2>&1 | tee cpu-check/inference.log
+
+      - name: Preserve logs and responses, never model weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: facet-qwen-cpu-check-${{ github.run_id }}
+          path: cpu-check/
+          retention-days: 7
+          if-no-files-found: warn
