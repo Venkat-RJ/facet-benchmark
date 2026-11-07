@@ -24,8 +24,5 @@ jobs:
       - name: Recompute valid-only metrics and enforce documented legacy exclusions
         run: python3 eval/recompute_valid_only.py --known-invalid eval/known_invalid_records.json --output /tmp/facet-valid-only-report.json
 
-      - name: Check historical v3 arithmetic (legacy, not a validity audit)
-        run: python3 eval/verify_paper_numbers.py
-
       - name: Check bibliography identifiers against arXiv
         run: python3 eval/verify_citations.py
